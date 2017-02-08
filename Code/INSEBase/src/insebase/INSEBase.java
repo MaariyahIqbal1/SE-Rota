@@ -3,29 +3,41 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
+
 package insebase;
-// Importing array lists
+// Importing array lists and file handling
+import java.io.*;
 import java.util.*;
 /**
  *
  * @author Doye
  */
 public class INSEBase {
-
+    
+// -----------------------------------------------------------------------------
+//* Data is currently saved to C:/data/ and consists of one file named
+//employee.ser. Run twice to generate the file if a read fails.
+//------------------------------------------------------------------------------
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // Initialise Arraylist to contain the employees. Arraylist chosen for
         //its auto resizing.
-        ArrayList<Person> empList = new ArrayList();
+        ArrayList<Person> empList = loadFileToList();
         
-        //Test data adding employees to the list
-        empList.add(new Person("Dave Jones", "DAJ", 20, 1));
-        empList.add(new Person("Will Smith", "WSM", 20, 2));
-        
-        // Prints all employees in the list
-        for(int i = 0; i < empList.size(); i++){
+//        Test data adding employees to the list
+//        empList.add(new Person("Dave Jones", "DAJ", 20, 1));
+//        empList.add(new Person("Will Smith", "WSM", 20, 2));
+
+//         Calls the print method
+       printList(empList);
+       saveListToFile(empList);
+    }
+    // Prints the employees in the list
+    private static void printList(ArrayList<Person> empList){
+                for(int i = 0; i < empList.size(); i++){
             System.out.println("---------------");
             System.out.println(empList.get(i).getFullName());
             System.out.println(empList.get(i).getShortName());
@@ -34,6 +46,54 @@ public class INSEBase {
         }
         // Formatting line
         System.out.println("---------------");
+    }
+    private static void saveListToFile(ArrayList<Person> empList){
+        String dirname = "/data";
+        File path = new File(dirname);
+      
+        // Create directory now.
+        path.mkdirs();
+        try {
+            // Prep the file
+            FileOutputStream fileOut = new FileOutputStream("/data/employee.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            // Write the arraylist to the file
+            out.writeObject(empList);
+            // Close write and file
+            out.close();
+            fileOut.close();
+            // Confirmation message
+            System.out.println("Save complete");
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        
+    }
+    private static ArrayList<Person> loadFileToList(){
+        // Create a temporary, empty, ArrayList
+        ArrayList<Person> temp = new ArrayList();
+        try{
+            // Begin file opening
+            FileInputStream fileIn = new FileInputStream("/data/employee.ser");
+            // Open next object
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            // The temporary array becomes what was read
+            temp = (ArrayList<Person>) in.readObject();
+            // Close file
+            in.close();
+            fileIn.close();
+            // Confirmation message
+            System.out.println("Loaded");
+            //Catch exceptions
+        }catch(IOException e){
+            e.printStackTrace();
+            
+        }catch(ClassNotFoundException e2){
+            System.out.println("Not Found");
+            e2.printStackTrace();
+        }
+        // Return either an empty Arraylist<Person> or the loaded one
+        return temp;
     }
     
 }
