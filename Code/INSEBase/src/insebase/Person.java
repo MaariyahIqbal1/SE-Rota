@@ -9,9 +9,10 @@ package insebase;
  *
  * @author Doye
  */
+//import java.io.*;
 
-// Person class
-public class Person {
+// Person class, Serializable allows for easy writing and reading to files
+public class Person implements java.io.Serializable {
     private String fullName, shortName;
     private int maxHours, idNum;
     
